@@ -138,7 +138,7 @@ const GallerySection = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const accessKey = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
+        // const accessKey = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
         const query = 'universe galaxy space';
         const response = await fetch(
           `https://api.unsplash.com/search/photos?query=${query}&per_page=9&client_id=${'y1Xl-aCqD3kMFsElw3f-RjBZztGXdUPBVbRJQQVM7Do'}`

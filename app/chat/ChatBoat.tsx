@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Mic, X, User, Mail, Phone } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -10,6 +10,35 @@ interface CHATS {
   id: string;
   msg: string;
   date: Date;
+}
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: Array<{
+    [index: number]: {
+      transcript: string;
+    };
+    isFinal: boolean;
+  }>;
+}
+
+interface ISpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: {
+      new (): ISpeechRecognition;
+    };
+    webkitSpeechRecognition: {
+      new (): ISpeechRecognition;
+    };
+  }
 }
 
 function ChatBoat() {
@@ -232,87 +261,52 @@ function ChatBoat() {
     }
   }, [lastDate]);
 
-  const sendMessageToApi = async () => {
-    try {
-      if (message.trim().length <= 1) {
-        return;
+ const sendMessageToApi = useCallback(async () => {
+  try {
+    if (message.trim().length <= 1) return;
+
+    const data = { session_id: sessionId, user_input: message };
+    setResLoader(true);
+    setMessage("");
+    setUserMsgs((pr) => [
+      ...pr,
+      { id: "user", msg: message, date: new Date() },
+    ]);
+
+    const res = await axios.post(
+      "https://ritz-ai-production.up.railway.app/api/v1/chat/",
+      data,
+      {
+        headers: { "X-API-KEY": process.env.NEXT_PUBLIC_CHATBOAT_API },
       }
-      const data = {
-        session_id: sessionId,
-        user_input: message,
-      };
-      setResLoader(true);
-      setMessage("");
-      setUserMsgs((pr) => [
-        ...pr,
-        {
-          id: "user",
-          msg: message,
-          date: new Date(),
-        },
-      ]);
+    );
 
-      const res = await axios.post(
-        "https://ritz-ai-production.up.railway.app/api/v1/chat/",
-        data,
-        {
-          headers: {
-            "X-API-KEY": process.env.NEXT_PUBLIC_CHATBOAT_API,
-          },
-        }
-      );
-
-      if (res.data.response) {
-        setResLoader(false);
-        setUserMsgs((pr) => [
-          ...pr,
-          {
-            id: "boat",
-            msg: res.data.response_html,
-            date: new Date(),
-          },
-        ]);
-        setLastDate(new Date());
-      }
-
-      // Scroll to bottom after message is added
-      setTimeout(() => {
-        crChatRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    } catch (error) {
-      console.log(error);
+    if (res.data.response) {
       setResLoader(false);
-      // Add error message to chat
       setUserMsgs((pr) => [
         ...pr,
-        {
-          id: "boat",
-          msg: "Sorry, I'm having trouble connecting right now. Please try again later.",
-          date: new Date(),
-        },
+        { id: "boat", msg: res.data.response_html, date: new Date() },
       ]);
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessageToApi();
-      }
-    };
-
-    const inputElement = inputRef.current;
-    if (inputElement) {
-      inputElement.addEventListener("keydown", handleKeyPress);
+      setLastDate(new Date());
     }
 
-    return () => {
-      if (inputElement) {
-        inputElement.removeEventListener("keydown", handleKeyPress);
-      }
-    };
-  }, [message, sessionId]);
+    setTimeout(() => {
+      crChatRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  } catch (error) {
+    console.log(error);
+    setResLoader(false);
+    setUserMsgs((pr) => [
+      ...pr,
+      {
+        id: "boat",
+        msg: "Sorry, I'm having trouble connecting right now. Please try again later.",
+        date: new Date(),
+      },
+    ]);
+  }
+}, [message, sessionId]); // ✅ dependencies tracked
+
 
   // Auto-resize textarea
   useEffect(() => {
@@ -342,11 +336,11 @@ function ChatBoat() {
   }, [frmResType]);
 
   const [isAudiable, setIsAudiable] = useState(false);
-  const [audiableTxt, setText] = useState("");
+  // const [audiableTxt, setText] = useState("");
   useEffect(() => {
-    const SpeechRec =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+ const SpeechRec =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
     if (!SpeechRec) {
       alert("Your Browser Do Not Supported Speech Recognitation!");
       return;
