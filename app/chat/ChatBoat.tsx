@@ -130,14 +130,14 @@ function ChatBoat() {
   }, [isOpen]);
 
   const toggleChat = async () => {
-    // alert(process.env.NEXT_PUBLIC_CHATBOAT_API);
+    // alert('26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce');
 
     try {
       const res = await axios.get(
         "https://ritz-ai-production.up.railway.app/api/v1/session/create", //close
         {
           headers: {
-            "X-API-KEY": process.env.NEXT_PUBLIC_CHATBOAT_API,
+            "X-API-KEY": '26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce',
           },
         }
       );
@@ -188,7 +188,7 @@ function ChatBoat() {
         formData,
         {
           headers: {
-            "X-API-KEY": process.env.NEXT_PUBLIC_CHATBOAT_API,
+            "X-API-KEY": '26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce',
           },
         }
       );
@@ -242,7 +242,7 @@ function ChatBoat() {
               { session_id: sessionId },
               {
                 headers: {
-                  "X-API-KEY": process.env.NEXT_PUBLIC_CHATBOAT_API,
+                  "X-API-KEY": '26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce',
                 },
               }
             );
@@ -277,7 +277,7 @@ function ChatBoat() {
       "https://ritz-ai-production.up.railway.app/api/v1/chat/",
       data,
       {
-        headers: { "X-API-KEY": process.env.NEXT_PUBLIC_CHATBOAT_API },
+        headers: { "X-API-KEY": '26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce' },
       }
     );
 
