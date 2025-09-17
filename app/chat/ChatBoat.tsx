@@ -134,7 +134,7 @@ function ChatBoat() {
 
     try {
       const res = await axios.get(
-        "https://ritz-ai-production.up.railway.app/api/v1/session/create", //close
+        "https://apis.contenaissance.com/api/v1/session/create", //close
         {
           headers: {
             "X-API-KEY": '26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce',
@@ -184,7 +184,7 @@ function ChatBoat() {
       }));
       setFormLoader(true);
       const res = await axios.post(
-        "https://ritz-ai-production.up.railway.app/api/v1/user/update",
+        "https://apis.contenaissance.com/api/v1/user/update",
         formData,
         {
           headers: {
@@ -238,7 +238,7 @@ function ChatBoat() {
         setTimeout(async () => {
           try {
             const res = await axios.post(
-              "https://ritz-ai-production.up.railway.app/api/v1/session/close",
+              "https://apis.contenaissance.com/api/v1/session/close",
               { session_id: sessionId },
               {
                 headers: {
@@ -274,7 +274,7 @@ function ChatBoat() {
     ]);
 
     const res = await axios.post(
-      "https://ritz-ai-production.up.railway.app/api/v1/chat/",
+      "https://apis.contenaissance.com/api/v1/chat/",
       data,
       {
         headers: { "X-API-KEY": '26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce' },
