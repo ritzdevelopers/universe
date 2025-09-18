@@ -274,7 +274,7 @@ function ChatBoat() {
     ]);
 
     const res = await axios.post(
-      "https://apis.contenaissance.com/api/v1/chat/stream",
+      "https://apis.contenaissance.com/api/v1/chat",
       data,
       {
         headers: { "X-API-KEY": '26f8eb961b3d0b30a20b838cad928389aa38397695d78aa3f89f936903f42bce' },
